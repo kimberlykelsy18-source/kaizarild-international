@@ -1,0 +1,99 @@
+
+  <!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "vf4385gv2b");
+</script>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>KAIZARI L&amp;D INTERNATIONAL</title>
+      <meta name="description" content="Kaizari L&amp;D offers corporate trainings: open-courses, in-house | customized trainings | virtual trainings | team building activities in Kenya and East Africa" />
+      <meta name="robots" content="noindex, nofollow" />
+      <style>html, body { height: 100%; margin: 0; } #root { height: 100%; }</style>
+      <script>function initApollo(){var n=Math.random().toString(36).substring(7),o=document.createElement("script");
+o.src="https://assets.apollo.io/micro/website-tracker/tracker.iife.js?nocache="+n,o.async=!0,o.defer=!0,
+o.onload=function(){window.trackingFunctions.onLoad({appId:"68ced61e28d0e10015bde2a6"})},
+document.head.appendChild(o)}initApollo();</script>
+    </head>
+
+    <body>
+      
+      <div id="root"></div>
+      <script type="module" src="/src/main.tsx"></script>
+      <!-- Load Supabase library -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+  // ✅ 1. Supabase connection
+  const SUPABASE_URL = 'https://nurmozhzovpwrcjhlzoa.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51cm1vemh6b3Zwd3Jjamhsem9hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxMDU3ODEsImV4cCI6MjA4NDY4MTc4MX0.L0poLQBppymW9mJtPbs9dhfclOQOU9FgERaoTv44jfM';
+  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // ✅ 2. Generalized form handler
+  async function handleForm(formSelector, table, emailSubject) {
+    const form = document.querySelector(formSelector);
+    if (!form) {
+      console.warn(`Form ${formSelector} not found.`);
+      return;
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Gather form data
+      const formData = Object.fromEntries(new FormData(form).entries());
+      console.log("Submitting form data:", formData);
+
+      // ✅ 3. Save data in Supabase
+      const { error } = await supabase.from(table).insert([formData]);
+      if (error) {
+        console.error('Supabase error:', error.message);
+        alert('❌ Error saving your submission. Please try again.');
+        return;
+      }
+
+      // ✅ 4. Send data to Zapier (email + HubSpot flow)
+      try {
+        const zapierResponse = await fetch('https://hooks.zapier.com/hooks/catch/24564789/uqp4rwx/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            formType: table,
+            subject: emailSubject,
+            recipient: 'admin@kaizarildinternational.com',
+            ...formData
+          })
+        });
+
+        if (!zapierResponse.ok) {
+          throw new Error(`Zapier webhook error: ${zapierResponse.statusText}`);
+        }
+
+        console.log("Zapier request sent successfully!");
+        alert('✅ Your message has been sent successfully!');
+        form.reset();
+
+      } catch (err) {
+        console.error('Error sending to Zapier:', err);
+        alert('⚠️ Your submission was saved, but the email alert failed.');
+      }
+    });
+  }
+
+  // ✅ 5. Attach handlers once page loads
+  document.addEventListener('DOMContentLoaded', () => {
+    handleForm('#contact-form', 'contacts', 'New Contact/Consultation Request');
+    handleForm('#demo-form', 'demos', 'New Demo Request');
+    handleForm('#trainer-form', 'trainers', 'New Trainer Application');
+    handleForm('#course-form', 'course_registrations', 'New Course Registration');
+  });
+</script>
+
+    </body>
+  </html>
+  

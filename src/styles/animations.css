@@ -1,0 +1,61 @@
+/* Marquee animation */
+.marquee {
+  animation: marquee 40s linear infinite;
+  will-change: transform;
+}
+
+.marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Marquee container for continuous scroll */
+.marquee-container {
+  display: flex;
+  width: max-content;
+}
+
+.marquee-content {
+  display: flex;
+  animation: marquee 30s linear infinite;
+  will-change: transform;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Intersection observer classes */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+  will-change: transform, opacity;
+}
+
+.scroll-reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Gradient animations */
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 8s ease infinite;
+}

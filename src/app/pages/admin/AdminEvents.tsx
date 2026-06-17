@@ -554,4 +554,53 @@ export default function AdminEvents() {
                 <div className="flex items-center justify-between border-b border-gray-200 pb-2">
                   <h3 className="text-lg font-bold text-gray-900">Who Should Attend</h3>
                   <button
-               
+                    onClick={() => update('whoShouldAttend', [...editingEvent.whoShouldAttend, ''])}
+                    className="text-primary hover:text-primary/80 text-sm font-semibold flex items-center gap-1"
+                  >
+                    <Plus className="w-4 h-4" /> Add Attendee
+                  </button>
+                </div>
+                {editingEvent.whoShouldAttend.map((attendee, i) => (
+                  <div key={i} className="flex gap-2">
+                    <input
+                      type="text"
+                      value={attendee}
+                      onChange={(e) => updateAttendee(i, e.target.value)}
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                      placeholder="e.g., Finance Manager"
+                    />
+                    <button
+                      onClick={() => update('whoShouldAttend', editingEvent.whoShouldAttend.filter((_, idx) => idx !== i))}
+                      className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </section>
+
+              {/* ── Save / Cancel ── */}
+              <div className="flex justify-end gap-3 border-t border-gray-200 pt-6">
+                <button
+                  onClick={() => { setEditingEvent(null); setIsCreating(false); }}
+                  className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 font-semibold hover:bg-gray-50 transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="bg-primary hover:bg-primary/90 disabled:opacity-50 text-white px-8 py-3 rounded-lg font-semibold flex items-center gap-2 transition-all"
+                >
+                  <Save className="w-5 h-5" />
+                  {saving ? 'Saving...' : isCreating ? 'Create Event' : 'Save Changes'}
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

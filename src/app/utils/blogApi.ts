@@ -1,6 +1,7 @@
 import { projectId, publicAnonKey } from './supabase/info';
 
-const BASE_URL = `https://${projectId}.supabase.co/functions/v1/make-server-420cbc7d/api/v1`;
+-const BASE_URL = `https://${projectId}.supabase.co/functions/v1/make-server-420cbc7d/api/v1`;
++const BASE_URL = `https://${projectId}.supabase.co/functions/v1/make-server-420cbc7d`;
 const MASTER_KEY = 'KAIZARI_ADMIN_2026';
 
 export interface Blog {

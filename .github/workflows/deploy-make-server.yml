@@ -19,16 +19,10 @@ jobs:
         run: |
           npm i -g supabase
 
-      - name: Authenticate supabase CLI
-        env:
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: |
-          echo "$SUPABASE_SERVICE_ROLE_KEY" > supabase_service_role_key.txt
-          supabase login --service-role-key $(cat supabase_service_role_key.txt)
-
       - name: Deploy function
         env:
           SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
         run: |
           cd supabase/functions/make-server-420cbc7d
-          supabase functions deploy make-server-420cbc7d --project-ref $SUPABASE_PROJECT_REF
+          supabase functions deploy make-server-420cbc7d --project-ref $SUPABASE_PROJECT_REF --token $SUPABASE_ACCESS_TOKEN

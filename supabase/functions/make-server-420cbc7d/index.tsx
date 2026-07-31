@@ -6,6 +6,7 @@ import * as kv from "./kv_store.tsx";
 
 const EVENTS_PREFIX = 'events_420cbc7d:';
 const CASE_STUDIES_PREFIX = 'case_studies_420cbc7d:';
+const TESTIMONIALS_PREFIX = 'testimonial:';
 
 function verifyAdminAuth(c: any): boolean {
   const master = c.req.header('X-Kaizari-Master');
@@ -13,7 +14,7 @@ function verifyAdminAuth(c: any): boolean {
   return master === 'KAIZARI_ADMIN_2026' || auth === 'KAIZARI_ADMIN_2026';
 }
 
-// ── Seed Data ────────────────────────────────────────────────────────────────
+// ── Seed Data ──────────────────────────────────────────────────────────��[...]
 const SEED_EVENTS: any[] = [];
 
 const SEED_CASE_STUDIES = [
@@ -24,7 +25,7 @@ const SEED_CASE_STUDIES = [
     participants: '25',
     program: 'In-House Intermediate-Advanced Excel Training',
     challenge: 'Training Needs & Business Challenge',
-    challengeDetails: "ZEP-RE's finance team was spending excessive time on manual data processing and financial reporting. Their existing Excel skills were limited to basic functions, resulting in inefficient workflows, delayed reporting cycles, and increased risk of errors in critical financial documents.",
+    challengeDetails: "ZEP-RE's finance team was spending excessive time on manual data processing and financial reporting. Their existing Excel skills were limited to basic functions, resulting i[...]",
     solution: 'Our Approach',
     solutionDetails: "We designed and delivered a comprehensive 5-day in-house training program tailored specifically to ZEP-RE's reinsurance workflows.",
     outcomes: [
@@ -35,7 +36,7 @@ const SEED_CASE_STUDIES = [
     ],
     impact: "The training transformed ZEP-RE's finance operations. Teams now complete monthly closing processes 40% faster.",
     testimonial: {
-      quote: "The in-house intermediate-advanced Excel training transformed our team's productivity. Our financial reporting time reduced by 40%, and the ROI was evident within the first quarter.",
+      quote: "The in-house intermediate-advanced Excel training transformed our team's productivity. Our financial reporting time reduced by 40%, and the ROI was evident within the first quarter.[...]",
       role: 'Head of Finance, ZEP-RE',
     },
     published: true,
@@ -47,9 +48,9 @@ const SEED_CASE_STUDIES = [
     participants: 'Soliton Telmec, Tropic Air, OML Africa Logistics, Qualibasic Seeds, PowerGroup Technologies',
     program: 'Advanced Financial Modeling and Dashboards With Excel (Open Course)',
     challenge: 'Training Needs & Business Challenge',
-    challengeDetails: 'Finance professionals from diverse industries faced common challenges: inability to create dynamic financial models, reliance on static spreadsheets for forecasting, and limited dashboard visualization capabilities.',
+    challengeDetails: 'Finance professionals from diverse industries faced common challenges: inability to create dynamic financial models, reliance on static spreadsheets for forecasting, and lim[...]',
     solution: 'Our Approach',
-    solutionDetails: 'Our 3-day Advanced Financial Modeling open course brought together professionals from multiple industries, creating a rich learning environment with cross-sector knowledge sharing.',
+    solutionDetails: 'Our 3-day Advanced Financial Modeling open course brought together professionals from multiple industries, creating a rich learning environment with cross-sector knowledge sh[...]',
     outcomes: [
       { metric: '35%', description: 'Improvement in forecasting accuracy' },
       { metric: '30+', description: 'Finance professionals from 5 industries' },
@@ -112,7 +113,7 @@ async function ensureAdminUser() {
   }
 }
 
-// ── Setup Admin ──────────────────────────────────────────────────────────────
+// ── Setup Admin ─────────────────────────────────────────────────────────��[...]
 // Creates the default admin account. Safe to call multiple times (idempotent).
 async function setupAdminRoute(c: any) {
   try {
@@ -353,10 +354,60 @@ api.delete('/case-studies/:id', async (c) => {
   try {
     const { id } = c.req.param();
     await kv.del(`${CASE_STUDIES_PREFIX}${id}`);
-    return c.json({ message: 'Deleted successfully' });
+    return c.json({ success: true });
   } catch (err) {
     console.log('case-studies/:id DELETE error:', err);
     return c.json({ error: 'Failed to delete case study' }, 500);
+  }
+});
+
+// Testimonials
+api.get('/testimonials', async (c) => {
+  try {
+    const items = await kv.getByPrefix(TESTIMONIALS_PREFIX);
+    const sorted = (items || [])
+      .filter((t: any) => t != null)
+      .sort((a: any, b: any) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+    return c.json(sorted);
+  } catch (err) {
+    console.log('testimonials error:', err);
+    return c.json({ error: 'Failed to fetch testimonials' }, 500);
+  }
+});
+
+api.post('/testimonials', async (c) => {
+  if (!verifyAdminAuth(c)) return c.json({ error: 'Unauthorized' }, 401);
+  try {
+    const body = await c.req.json();
+    const id = body.id || crypto.randomUUID();
+    const now = new Date().toISOString();
+    const item = {
+      id,
+      company: body.company || '',
+      role: body.role || '',
+      content: body.content || '',
+      program: body.program || '',
+      published: !!body.published,
+      createdAt: body.createdAt || now,
+      updatedAt: now,
+    };
+    await kv.set(`testimonial:${id}`, item);
+    return c.json(item, 201);
+  } catch (err) {
+    console.log('testimonials POST error:', err);
+    return c.json({ error: 'Failed to save testimonial' }, 500);
+  }
+});
+
+api.delete('/testimonials/:id', async (c) => {
+  if (!verifyAdminAuth(c)) return c.json({ error: 'Unauthorized' }, 401);
+  try {
+    const { id } = c.req.param();
+    await kv.del(`testimonial:${id}`);
+    return c.json({ success: true });
+  } catch (err) {
+    console.log('testimonials DELETE error:', err);
+    return c.json({ error: 'Failed to delete testimonial' }, 500);
   }
 });
 
@@ -565,7 +616,7 @@ api.post('/marquee', async (c) => {
     return c.json({ error: 'Failed to save marquee settings' }, 500);
   }
 });
-// ───────────────────────────────────────────────────────────────────────────
+// ────────────────────────────────────────────────────────────────[...]
 
 app.route('/make-server-420cbc7d', api);
 app.route('/', api);

@@ -1,0 +1,34 @@
+name: Deploy make-server function
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install supabase CLI
+        run: |
+          npm i -g supabase
+
+      - name: Authenticate supabase CLI
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          echo "$SUPABASE_SERVICE_ROLE_KEY" > supabase_service_role_key.txt
+          supabase login --service-role-key $(cat supabase_service_role_key.txt)
+
+      - name: Deploy function
+        env:
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+        run: |
+          cd supabase/functions/make-server-420cbc7d
+          supabase functions deploy make-server-420cbc7d --project-ref $SUPABASE_PROJECT_REF

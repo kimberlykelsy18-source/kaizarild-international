@@ -25,4 +25,5 @@ jobs:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
         run: |
           cd supabase/functions/make-server-420cbc7d
-          supabase functions deploy make-server-420cbc7d --project-ref $SUPABASE_PROJECT_REF --token $SUPABASE_ACCESS_TOKEN
+          # SUPABASE_ACCESS_TOKEN is provided via env; the CLI will use it automatically in CI
+          supabase functions deploy make-server-420cbc7d --project-ref $SUPABASE_PROJECT_REF
